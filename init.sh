@@ -46,7 +46,7 @@ declare -A install_results
 declare -A error_logs
 
 # Progress variables
-total_steps=18  # Increased total steps due to added installations
+total_steps=22  # Increased total steps due to added installations
 current_step=0
 
 # Move cursor to the line below the timer
@@ -82,6 +82,7 @@ run_command() {
         sudo dpkg --configure -a
     fi
 }
+
 echo "whtf is this..."
 run_command "Upgrade packages" sudo dpkg --configure -a 
 
@@ -90,7 +91,6 @@ run_command "Update package list" sudo apt-get update -y
 
 echo "Upgrading installed packages..."
 run_command "Upgrade packages" sudo apt-get upgrade -y
-
 
 echo "Installing necessary packages..."
 run_command "Necessary packages" sudo apt-get install -y xclip curl build-essential libudev-dev pkg-config libclang-dev software-properties-common python3 python3-pip ruby-full neovim tmux ftp lftp fish apt-transport-https ca-certificates locales git rsync
@@ -102,6 +102,10 @@ run_command "npm" sudo apt-get install -y npm
 # --- Install ts-node ---
 echo "Installing ts-node..."
 run_command "ts-node" sudo apt-get install -y ts-node
+
+# --- Install Nginx & Certbot ---
+echo "Installing nginx & certbot..."
+run_command "nginx & certbot" sudo apt install -y nginx certbot python3-certbot-nginx
 
 # --- Install nvm and node (without npm) ---
 echo "Installing nvm and node..."
@@ -145,9 +149,12 @@ run_command "Neovim" bash -c "
 echo "Installing and configuring Fish shell..."
 run_command "Fish shell" bash -c "
     sudo apt-get install -y fish && \
-    sudo chsh -s /usr/bin/fish \$USER && \
-    fish -c 'curl -sL https://git.io/fisher | source && fisher install jorgebucaran/fisher' && \
-    fish -c 'fisher update'"
+    sudo chsh -s /usr/bin/fish \$USER"
+
+# --- Install Oh My Fish ---
+echo "Installing Oh My Fish..."
+run_command "Oh My Fish" bash -c "
+    curl -L https://get.oh-my.fish | fish"
 
 # --- Install Docker ---
 echo "Installing Docker..."
@@ -252,6 +259,7 @@ verify_installation "fish" "Fish shell"
 verify_installation "docker" "Docker"
 verify_installation "docker-compose" "Docker Compose"
 verify_installation "sqlite3" "SQLite3"
+verify_installation "nginx" "Nginx" # Added Nginx verification
 
 echo ""
 echo "All checks completed!"
@@ -278,5 +286,4 @@ echo "Total time elapsed: ${minutes} minutes and ${seconds} seconds"
 
 # Kill the background timer process
 kill $timer_pid
-
 
